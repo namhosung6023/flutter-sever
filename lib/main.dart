@@ -22,6 +22,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
+  String name="";
+  String password="";
+  String email="";
 
   void joinTest() async {
     if (_formKey.currentState.validate()) {
@@ -30,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     Dio dio = new Dio();
     Response response = await dio.post('http://10.0.2.2:3000/accounts/join',
-        data: {"name": "hosung", "email": "asdfsdf", "password": "123456"});
+        data: {"name": name, "email": email, "password": password });
     print(response);
   }
 
@@ -50,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (value.isEmpty) {
                         return '공백은 허용되지 않습니다';
                       }
+                      name = value;
                       return null;
                     },
                     decoration: InputDecoration(
@@ -62,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (!value.contains('@')) {
                         return '이메일 형식에 맞게 쓰세요';
                       }
+                      email = value;
                       return null;
                     },
                     decoration: InputDecoration(
@@ -75,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         if(value.length <= 7 ){
                         return '비밀번호를 8자 이상 쓰세요';
                       }
+                        password = value;
                         return null;
                     },
                     obscureText: true,
