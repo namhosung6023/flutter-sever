@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:crypto/crypto.dart';
+import 'login_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -20,6 +23,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
   String name="";
@@ -32,8 +36,10 @@ class _MyHomePageState extends State<MyHomePage> {
           SnackBar(content: Text('처리중')));
     }
     Dio dio = new Dio();
+    String hashedPassword = sha256.convert(utf8.encode(password)).toString();
+    print('hashed: $hashedPassword');
     Response response = await dio.post('http://10.0.2.2:3000/accounts/join',
-        data: {"name": name, "email": email, "password": password });
+        data: {"username": name, "email": email, "password": hashedPassword });
     print(response);
   }
 
@@ -51,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   TextFormField(
                     validator: (value) {
                       if (value.isEmpty) {
-                        return '공백은 허용되지 않습니다';
+                        return '이름을 입력하세요.';
                       }
                       name = value;
                       return null;
@@ -64,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   TextFormField(
                     validator: (value) {
                       if (!value.contains('@')) {
-                        return '이메일 형식에 맞게 쓰세요';
+                        return '이메일 형식에 맞게 쓰세요.';
                       }
                       email = value;
                       return null;
@@ -78,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     controller: _passwordController,
                     validator: (value){
                         if(value.length <= 7 ){
-                        return '비밀번호를 8자 이상 쓰세요';
+                        return '비밀번호를 8자 이상 쓰세요.';
                       }
                         password = value;
                         return null;
@@ -102,19 +108,32 @@ class _MyHomePageState extends State<MyHomePage> {
                       print('passcon: ${_passwordController.text}');
 
                       if(value != _passwordController.text){
-                        return '비밀번호가 일치하지 않습니다 ';
+                        return '비밀번호가 일치하지 않습니다. ';
                       }
 
                       return null;
                     },
                   ),
                   RaisedButton(
-                    child: Text('Join in'),
+                    child: Text('Join '),
                     color: Colors.orange, // 배경 색상
                     onPressed: () {
                       joinTest();
                     },
                   ),
+                  RaisedButton(
+                    child: Text('로그인 하러 가기'),
+                    color: Colors.blueAccent,
+                    onPressed: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => LoginScreen(),
+                        ),
+                      );
+                    },
+                  )
+
                 ]
             )
         )
